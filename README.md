@@ -4,7 +4,7 @@
 <h1 align="center">ACompiling your programs:</h1>
 
 
-```
+```bash
 #!/bin/bash
 
 
