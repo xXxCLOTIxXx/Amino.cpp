@@ -1,7 +1,7 @@
 <body>
 
 <h1 align="center">Amino.cpp</h1>
-<h1 align="center">ACompiling your programs:</h1>
+<h1 align="center">Compiling your programs:</h1>
 
 
 ```bash
