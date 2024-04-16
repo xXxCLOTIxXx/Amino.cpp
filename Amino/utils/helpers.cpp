@@ -30,7 +30,7 @@ namespace Helpers {
         return result;
     }
 
-    void get_headers(http::request<http::string_body>& req, const std::string& deviceId, const std::string& sid, const std::string& data, const std::string& user_agent, const std::string& language, const std::string& content_type) {
+    void set_headers(http::request<http::string_body>& req, const std::string& deviceId, const std::string& sid, const std::string& data, const std::string& user_agent, const std::string& language, const std::string& content_type) {
         req.set("NDCLANG", lower(language));
         req.set("Accept-Language", lower(language)+"-"+upper(language));
         req.set("User-Agent", user_agent);

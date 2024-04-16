@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Client::Client(const std::string& deviceId, const std::string& user_agent, const std::string& language) {
+Client::Client(const std::string& deviceId, const std::string& user_agent, const std::string& language): requester(&profile) {
     profile.language = language;
     profile.user_agent = user_agent;
     if (deviceId.empty()) {
@@ -11,8 +11,8 @@ Client::Client(const std::string& deviceId, const std::string& user_agent, const
         profile.deviceId = deviceId;
     }
 }
-std::string Client::login(std::string email, std::string password) {
-
+json Client::login(std::string email, std::string password) {
+    //todo
     json data = {
         {"email", email},
         {"secret", "0 " + password},
@@ -21,5 +21,12 @@ std::string Client::login(std::string email, std::string password) {
         {"v", 2}
     };
     std::string json_str = data.dump();
-    return requester.sendRequest("POST", "/g/s/auth/login", json_str);
+    json result = requester.sendRequest("POST", "/g/s/auth/login", json_str);
+    return result;
+}
+
+json Client::get_from_link(std::string link) {
+
+    json result = requester.sendRequest("GET", "/g/s/link-resolution?q="+link);
+    return result;
 }

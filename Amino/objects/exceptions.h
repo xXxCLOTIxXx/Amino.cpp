@@ -1,31 +1,61 @@
 #ifndef EXCEPTIONS_H
 #define EXCEPTIONS_H
 
-#include <exception>
+
 #include <string>
 
-class CustomError1 : public std::exception {
-private:
-    std::string errorMessage;
+#include "../libs/json.hpp"
+using json = nlohmann::json;
 
+
+class UnknownError : public std::exception {
 public:
-    CustomError1(const std::string& message) : errorMessage(message) {}
+    UnknownError(const std::string& message) : message_(message) {}
 
     const char* what() const noexcept override {
-        return errorMessage.c_str();
+        return message_.c_str();
     }
-};
-
-class CustomError2 : public std::exception {
 private:
-    std::string errorMessage;
-
-public:
-    CustomError2(const std::string& message) : errorMessage(message) {}
-
-    const char* what() const noexcept override {
-        return errorMessage.c_str();
-    }
+    std::string message_;
 };
+
+
+
+
+class IpTemporaryBan : public std::runtime_error {
+public:
+    IpTemporaryBan(const std::string& message) : std::runtime_error(message) {}
+};
+
+class InvalidRequest : public std::runtime_error {
+public:
+    InvalidRequest(const std::string& message) : std::runtime_error(message) {}
+};
+
+
+void checkError(int statusCode, const std::string& data) {
+    std::string message;
+    int apiCode;
+    try {
+        json j = json::parse(data);
+
+        message = j["api:message"];
+        apiCode = j["api:statuscode"];
+    } catch (std::exception const& e) {
+        message = data;
+        apiCode = 403;
+    }
+
+    switch (apiCode) {
+        case 103:
+            throw InvalidRequest(message);
+        case 104:
+            throw InvalidRequest(message);
+        case 403:
+            throw IpTemporaryBan(message);
+        default:
+            throw UnknownError(message);
+    }
+}
 
 #endif
