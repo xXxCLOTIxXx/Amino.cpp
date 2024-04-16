@@ -12,7 +12,7 @@ namespace http = boost::beast::http;
 
 
 namespace Helpers {
-
+    
     // Объявления переменных
     extern const std::vector<unsigned char> PREFIX;
     extern const std::vector<unsigned char> SIG_KEY;

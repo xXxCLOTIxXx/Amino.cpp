@@ -69,8 +69,8 @@ http::response<http::dynamic_body> Requester::post(const std::string& endpoint, 
 
         http::request<http::string_body> req{http::verb::post, api + endpoint, 11};
         req.set(http::field::host, host);
-        req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
-        req.set(http::field::content_type, "application/json");
+        Helpers::get_headers(req, Helpers::genDeviceId(), "", body);
+
         req.body() = body;
         req.prepare_payload();
 

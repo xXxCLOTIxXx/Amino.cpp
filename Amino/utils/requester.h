@@ -15,6 +15,8 @@ using json = nlohmann::json;
 
 #include "helpers.h"
 
+#include "../objects/req_data.h"
+
 
 
 namespace beast = boost::beast;
