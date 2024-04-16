@@ -2,7 +2,9 @@
 
 <h1 align="center">Amino.cpp</h1>
 <h1 align="center">ACompiling your programs:</h1>
-```sh
+
+
+```
 #!/bin/bash
 
 
