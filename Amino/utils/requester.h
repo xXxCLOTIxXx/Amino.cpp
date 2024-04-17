@@ -19,6 +19,7 @@ using json = nlohmann::json;
 #include "../objects/exceptions.h"
 
 #include "../libs/json.hpp"
+#include "../objects/constants.h"
 using json = nlohmann::json;
 
 namespace beast = boost::beast;
@@ -41,9 +42,6 @@ public:
     void checkError(int statusCode, const std::string& data);
 
 private:
-    std::string host = "service.aminoapps.com";
-    std::string api ="/api/v1/";
-
     ssl::context ctx_; 
     req_data* profile_data;
 };

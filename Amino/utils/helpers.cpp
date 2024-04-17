@@ -15,11 +15,6 @@ namespace http = boost::beast::http;
 
 namespace Helpers {
 
-    const std::vector<unsigned char> PREFIX = {0x19};
-    const std::vector<unsigned char> SIG_KEY = {0xdf, 0xa5, 0xed, 0x19, 0x2d, 0xda, 0x6e, 0x88, 0xa1, 0x2f, 0xe1, 0x21, 0x30, 0xdc, 0x62, 0x06, 0xb1, 0x25, 0x1e, 0x44};
-    const std::vector<unsigned char> DEVICE_KEY = {0xe7, 0x30, 0x9e, 0xcc, 0x09, 0x53, 0xc6, 0xfa, 0x60, 0x00, 0x5b, 0x27, 0x65, 0xf9, 0x9d, 0xbb, 0xc9, 0x65, 0xc8, 0xe9};
-
-
     std::string upper(const std::string& str) {
         std::string result = str;
         std::transform(result.begin(), result.end(), result.begin(), [](unsigned char c){ return std::toupper(c); });
@@ -60,13 +55,13 @@ namespace Helpers {
     }
 
     std::string genDeviceId(const std::vector<unsigned char>& data) {
-        std::vector<unsigned char> identifier = PREFIX;
+        std::vector<unsigned char> identifier = Constants::PREFIX;
         identifier.insert(identifier.end(), data.begin(), data.end());
 
         unsigned int macLen = SHA_DIGEST_LENGTH;
         std::vector<unsigned char> mac(macLen);
 
-        HMAC(EVP_sha1(), DEVICE_KEY.data(), DEVICE_KEY.size(), identifier.data(), identifier.size(), mac.data(), &macLen);
+        HMAC(EVP_sha1(), Constants::DEVICE_KEY.data(), Constants::DEVICE_KEY.size(), identifier.data(), identifier.size(), mac.data(), &macLen);
 
         std::stringstream deviceId;
         deviceId << std::hex << std::uppercase << std::setfill('0');
@@ -83,9 +78,9 @@ namespace Helpers {
     std::string genSignature(const std::string& data) {
         unsigned int hashLen;
         unsigned char hash[EVP_MAX_MD_SIZE];
-        HMAC(EVP_sha1(), SIG_KEY.data(), SIG_KEY.size(), reinterpret_cast<const unsigned char*>(data.c_str()), data.length(), hash, &hashLen);
+        HMAC(EVP_sha1(), Constants::SIG_KEY.data(), Constants::SIG_KEY.size(), reinterpret_cast<const unsigned char*>(data.c_str()), data.length(), hash, &hashLen);
 
-        std::vector<unsigned char> prefixHash(PREFIX);
+        std::vector<unsigned char> prefixHash(Constants::PREFIX);
         prefixHash.insert(prefixHash.end(), hash, hash + hashLen);
 
         return base64_encode(prefixHash);
@@ -116,6 +111,10 @@ namespace Helpers {
         auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
         auto value = now_ms.time_since_epoch().count();
         return value;
+    }
+
+    std::string sock_signbody(){
+        return "";
     }
 
 

@@ -29,7 +29,7 @@ json Requester::json_parse(const std::string& data){
 }
 
 void Requester::header(http::request<http::string_body>& req, const std::string& data, const std::string& content_type){
-    req.set(http::field::host, host);
+    req.set(http::field::host, Constants::HTTPS_HOST);
     Helpers::set_headers(req, profile_data->deviceId, profile_data->sid, profile_data->userId, data, profile_data->user_agent, profile_data->language, content_type);
 }
 
@@ -38,10 +38,10 @@ http::response<http::dynamic_body> Requester::get(const std::string& endpoint) {
         net::io_context ioc;
         ssl::stream<tcp::socket> stream(ioc, ctx_);
         tcp::resolver resolver(ioc);
-        auto const results = resolver.resolve(host, "https");
+        auto const results = resolver.resolve(Constants::HTTPS_HOST, "https");
         net::connect(stream.next_layer(), results.begin(), results.end());
         stream.handshake(ssl::stream_base::client);
-        http::request<http::string_body> req{http::verb::get, api+endpoint, 11};
+        http::request<http::string_body> req{http::verb::get, Constants::API_ENDPOINT+endpoint, 11};
         header(req);
         http::write(stream, req);
         beast::flat_buffer buffer;
@@ -64,11 +64,11 @@ http::response<http::dynamic_body> Requester::post(const std::string& endpoint, 
         net::io_context ioc;
         ssl::stream<tcp::socket> stream(ioc, ctx_);
         tcp::resolver resolver(ioc);
-        auto const results = resolver.resolve(host, "https");
+        auto const results = resolver.resolve(Constants::HTTPS_HOST, "https");
         net::connect(stream.next_layer(), results.begin(), results.end());
         stream.handshake(ssl::stream_base::client);
-        http::request<http::string_body> req{http::verb::post, api + endpoint, 11};
-        req.set(http::field::host, host);
+        http::request<http::string_body> req{http::verb::post, Constants::API_ENDPOINT + endpoint, 11};
+        req.set(http::field::host, Constants::HTTPS_HOST);
 
         if (body!=""){
             json temp = json::parse(body);
@@ -102,10 +102,10 @@ http::response<http::dynamic_body> Requester::delete_request(const std::string& 
         net::io_context ioc;
         ssl::stream<tcp::socket> stream(ioc, ctx_);
         tcp::resolver resolver(ioc);
-        auto const results = resolver.resolve(host, "https");
+        auto const results = resolver.resolve(Constants::HTTPS_HOST, "https");
         net::connect(stream.next_layer(), results.begin(), results.end());
         stream.handshake(ssl::stream_base::client);
-        http::request<http::string_body> req{http::verb::delete_, api+endpoint, 11};
+        http::request<http::string_body> req{http::verb::delete_, Constants::API_ENDPOINT+endpoint, 11};
         header(req);
         http::write(stream, req);
         beast::flat_buffer buffer;
