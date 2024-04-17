@@ -3,7 +3,7 @@
 <h1 align="center">Amino.cpp</h1>
 <h2 align="center">Examples (more examples in the corresponding directory):</h2>
 
-<h2 align="center">Login</h2>
+<h3 align="center">Login</h3>
 
 ```с++
 #include "Amino/Client.h"
@@ -22,7 +22,7 @@ int main() {
     return 0;
 }
 ```
-<h2 align="center">Get link info</h2>
+<h3 align="center">Get link info</h3>
 
 ```с++
 #include "Amino/Client.h"
