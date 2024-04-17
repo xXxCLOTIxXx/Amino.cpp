@@ -30,12 +30,12 @@ public:
     Requester(req_data* profile);
     //~Requester();
 
-    json sendRequest(const std::string& method, const std::string& endpoint, const std::string& body = "", const int successfully = 200);
+    json sendRequest(std::string method, const std::string& endpoint, const std::string& body = "", const int successfully = 200);
     http::response<http::dynamic_body> get(const std::string& endpoint);
-    http::response<http::dynamic_body> post(const std::string& endpoint, const std::string& body);
-    std::string delete_request(const std::string& endpoint);
+    http::response<http::dynamic_body> post(const std::string& endpoint, std::string body = "");
+    http::response<http::dynamic_body> delete_request(const std::string& endpoint);
     json json_parse(const std::string& data);
-    void header(http::request<http::string_body>& req, const std::string& data = "", const std::string& content_type = "Apple iPhone12,1 iOS v15.5 Main/3.12.2");
+    void header(http::request<http::string_body>& req, const std::string& data = "", const std::string& content_type = "application/json");
 
 private:
     std::string host = "service.aminoapps.com";

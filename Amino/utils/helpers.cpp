@@ -9,6 +9,8 @@
 #include <openssl/rand.h>
 #include <boost/beast/http.hpp>
 
+#include <typeinfo>
+
 namespace http = boost::beast::http;
 
 namespace Helpers {
@@ -30,21 +32,24 @@ namespace Helpers {
         return result;
     }
 
-    void set_headers(http::request<http::string_body>& req, const std::string& deviceId, const std::string& sid, const std::string& data, const std::string& user_agent, const std::string& language, const std::string& content_type) {
+    void set_headers(http::request<http::string_body>& req, const std::string& deviceId, const std::string& sid, const std::string& uid, const std::string& data, const std::string& user_agent, const std::string& language, const std::string& content_type) {
         req.set("NDCLANG", lower(language));
         req.set("Accept-Language", lower(language)+"-"+upper(language));
         req.set("User-Agent", user_agent);
         req.set("Accept-Encoding", "identity");
-        req.set("Connection", "Upgrade");
+        req.set("Accept", "*/*");
+        req.set("Connection", "keep-alive");
         req.set("NDCDEVICEID", deviceId);
         req.set("Content-Type", content_type);
-        
-        if (!sid.empty()){
+        if (sid!=""){
             req.set("NDCAUTH", "sid="+sid);
         }
-        if (!data.empty()){
+        if (data!=""){
             req.set("Content-Length", std::to_string(data.length()));
             req.set("NDC-MSG-SIG", genSignature(data));
+        }
+        if (uid!=""){
+            req.set("AUID", uid);
         }
     }
 
@@ -76,12 +81,24 @@ namespace Helpers {
     }
 
     std::string genSignature(const std::string& data) {
-        std::vector<unsigned char> hash(SHA_DIGEST_LENGTH);
-        HMAC(EVP_sha1(), SIG_KEY.data(), SIG_KEY.size(), reinterpret_cast<const unsigned char*>(data.c_str()), data.length(), hash.data(), nullptr);
+        unsigned int hashLen;
+        unsigned char hash[EVP_MAX_MD_SIZE];
+        HMAC(EVP_sha1(), SIG_KEY.data(), SIG_KEY.size(), reinterpret_cast<const unsigned char*>(data.c_str()), data.length(), hash, &hashLen);
 
+        std::vector<unsigned char> prefixHash(PREFIX);
+        prefixHash.insert(prefixHash.end(), hash, hash + hashLen);
+
+        return base64_encode(prefixHash);
+    }
+
+    std::string base64_encode(const std::vector<unsigned char>& input) {
         BIO *bio = BIO_new(BIO_s_mem());
-        BIO_write(bio, PREFIX.data(), PREFIX.size());
-        BIO_write(bio, hash.data(), hash.size());
+        BIO *b64 = BIO_new(BIO_f_base64());
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL); // Remove this line to include newline characters
+        bio = BIO_push(b64, bio);
+
+        BIO_write(bio, input.data(), input.size());
+        BIO_flush(bio);
 
         BUF_MEM *bptr;
         BIO_get_mem_ptr(bio, &bptr);
@@ -92,4 +109,14 @@ namespace Helpers {
 
         return result;
     }
+
+
+    long int timestamp(){
+        auto now = std::chrono::system_clock::now();
+        auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(now);
+        auto value = now_ms.time_since_epoch().count();
+        return value;
+    }
+
+
 }

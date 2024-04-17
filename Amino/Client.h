@@ -12,6 +12,7 @@ public:
     Client(const std::string& deviceId = "", const std::string& user_agent = "Apple iPhone12,1 iOS v15.5 Main/3.12.2", const std::string& language = "en");
 
     json login(std::string email, std::string password);
+    json logout();
     json get_from_link(std::string link);
 
 };

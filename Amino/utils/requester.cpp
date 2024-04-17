@@ -5,12 +5,17 @@ Requester::Requester(req_data* profile) : ctx_(ssl::context::tlsv12_client), pro
     ctx_.set_default_verify_paths();
 }
 
-json Requester::sendRequest(const std::string& method, const std::string& endpoint, const std::string& body, const int successfully) {
+json Requester::sendRequest(std::string method, const std::string& endpoint, const std::string& body, const int successfully) {
     http::response<http::dynamic_body> result;
+    method = Helpers::upper(method);
     if (method == "GET"){
         result = Requester::get(endpoint);
     } else if (method == "POST"){
         result = Requester::post(endpoint, body);
+    } else if (method == "DELETE"){
+        result = Requester::delete_request(endpoint);
+    } else{
+        throw InvalidRequestType("Invalid request type ["+method+"]");
     }
     auto status_code = result.result_int();
     if (status_code != successfully){
@@ -26,7 +31,7 @@ json Requester::json_parse(const std::string& data){
 
 void Requester::header(http::request<http::string_body>& req, const std::string& data, const std::string& content_type){
     req.set(http::field::host, host);
-    Helpers::set_headers(req, profile_data->deviceId, profile_data->sid, data, profile_data->user_agent, profile_data->language, content_type);
+    Helpers::set_headers(req, profile_data->deviceId, profile_data->sid, profile_data->userId, data, profile_data->user_agent, profile_data->language, content_type);
 }
 
 http::response<http::dynamic_body> Requester::get(const std::string& endpoint) {
@@ -55,7 +60,7 @@ http::response<http::dynamic_body> Requester::get(const std::string& endpoint) {
     }
 }
 
-http::response<http::dynamic_body> Requester::post(const std::string& endpoint, const std::string& body) {
+http::response<http::dynamic_body> Requester::post(const std::string& endpoint, std::string body) {
     try {
         net::io_context ioc;
         ssl::stream<tcp::socket> stream(ioc, ctx_);
@@ -65,8 +70,17 @@ http::response<http::dynamic_body> Requester::post(const std::string& endpoint, 
         stream.handshake(ssl::stream_base::client);
         http::request<http::string_body> req{http::verb::post, api + endpoint, 11};
         req.set(http::field::host, host);
-        header(req);
-        req.body() = body;
+
+        if (body!=""){
+            json temp = json::parse(body);
+            temp["timestamp"] = Helpers::timestamp();
+            body=temp.dump();
+            header(req, body);
+            req.body() = body;
+        } else{
+            header(req, body, "application/x-www-form-urlencoded");
+        }
+
         req.prepare_payload();
         http::write(stream, req);
         beast::flat_buffer buffer;
@@ -84,6 +98,28 @@ http::response<http::dynamic_body> Requester::post(const std::string& endpoint, 
     }
 }
 
-std::string Requester::delete_request(const std::string& endpoint) {
-    return "";
+http::response<http::dynamic_body> Requester::delete_request(const std::string& endpoint) {
+    try {
+        net::io_context ioc;
+        ssl::stream<tcp::socket> stream(ioc, ctx_);
+        tcp::resolver resolver(ioc);
+        auto const results = resolver.resolve(host, "https");
+        net::connect(stream.next_layer(), results.begin(), results.end());
+        stream.handshake(ssl::stream_base::client);
+        http::request<http::string_body> req{http::verb::delete_, api+endpoint, 11};
+        header(req);
+        http::write(stream, req);
+        beast::flat_buffer buffer;
+        http::response<http::dynamic_body> res;
+        http::read(stream, buffer, res);
+
+        return res;
+    } catch (std::exception const& e) {
+        std::string responseBody = "Error: " + std::string(e.what());
+        boost::beast::multi_buffer responseBuffer;
+        responseBuffer.commit(boost::asio::buffer_copy(responseBuffer.prepare(responseBody.size()), boost::asio::buffer(responseBody)));
+        http::response<http::dynamic_body> errorResponse{http::status::client_closed_request, 11, std::move(responseBuffer)};
+        errorResponse.prepare_payload();
+        return errorResponse;
+    }
 }
