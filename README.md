@@ -34,7 +34,7 @@ int main() {
 }
 
 ```
-
+<br>
 <h2 align="center">Compiling your programs:</h2>
 
 ```
