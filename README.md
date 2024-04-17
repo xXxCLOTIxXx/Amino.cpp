@@ -5,7 +5,7 @@
 
 <h3 align="center">Login</h3>
 
-```сpp
+```cpp
 #include "Amino/Client.h"
 #include "Amino/libs/json.hpp"
 using json = nlohmann::json;
@@ -24,7 +24,7 @@ int main() {
 ```
 <h3 align="center">Get link info</h3>
 
-```сpp
+```cpp
 #include "Amino/Client.h"
 int main() {
     Client client;
