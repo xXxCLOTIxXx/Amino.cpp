@@ -7,7 +7,7 @@
 g++ -std=c++11 -o programm filename.cpp Amino/Client.cpp Amino/utils/requester.cpp Amino/utils/helpers.cpp -L/usr/lib -lboost_system -lssl -lcrypto
 ```
 
-<p align="center">or bash script</p>
+<p align="center">or bash script (linux)</p>
 
 ```bash
 #!/bin/bash
