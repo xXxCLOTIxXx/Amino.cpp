@@ -1,5 +1,4 @@
 #include "requester.h"
-#include "../objects/exceptions.h"
 
 Requester::Requester(req_data* profile) : ctx_(ssl::context::tlsv12_client), profile_data(profile) {
     ctx_.set_default_verify_paths();
@@ -19,7 +18,7 @@ json Requester::sendRequest(std::string method, const std::string& endpoint, con
     }
     auto status_code = result.result_int();
     if (status_code != successfully){
-        checkError(result.result_int(), boost::beast::buffers_to_string(result.body().data()));
+        Requester::checkError(result.result_int(), boost::beast::buffers_to_string(result.body().data()));
     }
     return json_parse(boost::beast::buffers_to_string(result.body().data()));   
 }
@@ -121,5 +120,39 @@ http::response<http::dynamic_body> Requester::delete_request(const std::string& 
         http::response<http::dynamic_body> errorResponse{http::status::client_closed_request, 11, std::move(responseBuffer)};
         errorResponse.prepare_payload();
         return errorResponse;
+    }
+
+}
+
+
+
+void Requester::checkError(int statusCode, const std::string& data) {
+    std::cout << data;
+    std::string message;
+    int apiCode;
+    try {
+        json j = json::parse(data);
+
+        apiCode = j["api:statuscode"];
+        message = j["api:message"];
+        message+= "[api:statuscode]: "+std::to_string(apiCode);
+    } catch (std::exception const& e) {
+        message = data;
+        apiCode = -1;
+    }
+
+    switch (apiCode) {
+        case 103:
+            throw InvalidRequest(message);
+        case 104:
+            throw InvalidRequest(message);
+        case 216:
+            throw AccountDoesNotExist(message);
+        case 218:
+            throw UnsupportedDeviceId(message);
+        case -1:
+            throw JsonDecodeError(message);
+        default:
+            throw UnknownError(message);
     }
 }

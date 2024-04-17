@@ -16,8 +16,10 @@ using json = nlohmann::json;
 #include "helpers.h"
 
 #include "../objects/req_data.h"
+#include "../objects/exceptions.h"
 
-
+#include "../libs/json.hpp"
+using json = nlohmann::json;
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -36,6 +38,7 @@ public:
     http::response<http::dynamic_body> delete_request(const std::string& endpoint);
     json json_parse(const std::string& data);
     void header(http::request<http::string_body>& req, const std::string& data = "", const std::string& content_type = "application/json");
+    void checkError(int statusCode, const std::string& data);
 
 private:
     std::string host = "service.aminoapps.com";

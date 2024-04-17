@@ -3,9 +3,7 @@
 
 
 #include <string>
-
-#include "../libs/json.hpp"
-using json = nlohmann::json;
+#include <stdexcept>
 
 
 class InvalidRequestType : public std::runtime_error {
@@ -13,6 +11,11 @@ public:
     InvalidRequestType(const std::string& message) : std::runtime_error(message) {}
 };
 
+
+class ArgumentError : public std::runtime_error {
+public:
+    ArgumentError(const std::string& message) : std::runtime_error(message) {}
+};
 
 
 
@@ -47,34 +50,10 @@ public:
     UnsupportedDeviceId(const std::string& message) : std::runtime_error(message) {}
 };
 
+class AccountDoesNotExist : public std::runtime_error {
+public:
+    AccountDoesNotExist(const std::string& message) : std::runtime_error(message) {}
+};
 
-
-void checkError(int statusCode, const std::string& data) {
-    std::string message;
-    int apiCode;
-    try {
-        json j = json::parse(data);
-
-        apiCode = j["api:statuscode"];
-        message = j["api:message"];
-        message+= "[api:statuscode]: "+std::to_string(apiCode);
-    } catch (std::exception const& e) {
-        message = data;
-        apiCode = -1;
-    }
-
-    switch (apiCode) {
-        case 103:
-            throw InvalidRequest(message);
-        case 104:
-            throw InvalidRequest(message);
-        case 218:
-            throw UnsupportedDeviceId(message);
-        case -1:
-            throw JsonDecodeError(message);
-        default:
-            throw UnknownError(message);
-    }
-}
 
 #endif
