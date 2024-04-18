@@ -21,7 +21,7 @@ json Requester::sendRequest(RequestTypes method, const std::string& endpoint, co
 
         break;
     default:
-        throw InvalidRequestType("Invalid request type [" + std::to_string(method) + "]");
+        throw InvalidRequestType("Invalid request method");
 
         break;
     }

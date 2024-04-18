@@ -115,11 +115,8 @@ void Socket::message_handler(websocketpp::connection_hdl hdl, websocket_client::
 
         try {
             json jsonData = json::parse(msg->get_payload());
-
-
-            std::cout << "Received JSON data:\n" << jsonData.dump(4) << std::endl;
+            dataHandler(jsonData);
         } catch (const json::parse_error& e) {
-            std::cerr << "JSON parsing error: " << e.what() << std::endl;
     }
 }
 

@@ -1,5 +1,4 @@
 #include "EventHandler.h"
-
 void EventHandler::addHandler(const std::string& eventName, EventFunction func) {
     eventMap[eventName].push_back(func);
 }
@@ -12,4 +11,9 @@ void EventHandler::call(const std::string& eventType, const json& data) {
             }
         }
     }
+}
+
+void EventHandler::dataHandler(const json& data){
+    std::cout << "Received JSON data:\n" << data.dump(4) << std::endl;
+
 }

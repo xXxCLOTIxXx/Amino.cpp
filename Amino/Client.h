@@ -6,10 +6,9 @@
 #include "utils/requester.h"
 #include "objects/req_data.h"
 #include "Socket.h"
-#include "EventHandler.h"
 
 
-class Client  : public EventHandler {
+class Client {
 public:
     req_data profile;
     Requester requester;
