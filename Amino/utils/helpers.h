@@ -19,8 +19,9 @@ namespace Helpers {
     std::vector<unsigned char> genRandomBytes(size_t length);
     std::string genDeviceId(const std::vector<unsigned char>& data = genRandomBytes(20));
     std::string base64_encode(const std::vector<unsigned char>& input);
-    std::string sock_signbody();
     long int timestamp();
+    bool checkType(const std::string& type, const std::vector<std::string>& validTypes);
+    std::string replaceChars(const std::string& str, char from, const std::string& to);
 
 }
 #endif // HELPERS_H

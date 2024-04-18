@@ -113,8 +113,22 @@ namespace Helpers {
         return value;
     }
 
-    std::string sock_signbody(){
-        return "";
+
+    bool checkType(const std::string& type, const std::vector<std::string>& validTypes) {
+        if (std::find(validTypes.begin(), validTypes.end(), type) == validTypes.end()) {
+            return true;
+        }
+        return false;
+    }
+
+    std::string replaceChars(const std::string& str, char from, const std::string& to) {
+        std::string result = str;
+        size_t pos = result.find(from);
+        while (pos != std::string::npos) {
+            result.replace(pos, 1, to);
+            pos = result.find(from, pos + to.size());
+        }
+        return result;
     }
 
 

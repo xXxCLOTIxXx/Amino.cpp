@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Client::Client(const std::string& deviceId, const std::string& user_agent, const std::string& language): requester(&profile) {
+Client::Client(const std::string& deviceId, bool _run_socket, const std::string& user_agent, const std::string& language): requester(&profile), socket_enabladed(_run_socket), ws_socket(&profile) {
     profile.language = language;
     profile.user_agent = user_agent;
     if (deviceId.empty()) {

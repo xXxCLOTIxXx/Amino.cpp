@@ -1,29 +1,32 @@
-#ifndef ASYNC_SOCKET_H
-#define ASYNC_SOCKET_H
+#pragma once
 
-#include <boost/asio.hpp>
-#include <boost/thread.hpp>
-#include <boost/array.hpp>
-//todo
-class AsyncSocket {
+#include <iostream>
+#include <string>
+#include <thread>
+#include <functional>
+#include <websocketpp/config/asio_client.hpp>
+#include <websocketpp/client.hpp>
+#include "objects/constants.h"
+#include "objects/req_data.h"
+#include "utils/helpers.h"
+using websocket_client = websocketpp::client<websocketpp::config::asio_tls_client>;
+
+class Socket {
 public:
-    AsyncSocket();
-    ~AsyncSocket();
+    req_data* profile;
+
+    Socket(req_data* _profile);
+    ~Socket();
 
     void connect();
     void disconnect();
     void send(const std::string& message);
+    void ws_headers(const websocketpp::connection_hdl& connection, const std::string& final);
 
 private:
-    void async_read();
-    void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
-    void run_io_context();
-
-private:
-    boost::asio::io_context io_context_;
-    boost::asio::ip::tcp::socket socket_;
-    boost::thread thread_;
-    boost::array<char, 1024> buffer_;
+    void message_handler(websocketpp::connection_hdl hdl, websocket_client::message_ptr msg);
+    
+    websocket_client m_client;
+    websocketpp::connection_hdl m_hdl;
+    std::thread m_thread;
 };
-
-#endif

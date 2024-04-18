@@ -1,66 +1,72 @@
 #include "Socket.h"
-#include <iostream> 
-#include <boost/bind.hpp>
-#include "objects/constants.h"
-#include "utils/helpers.h"
-//todo
-AsyncSocket::AsyncSocket() : io_context_(), socket_(io_context_), thread_() {}
 
-AsyncSocket::~AsyncSocket() {
+Socket::Socket(req_data* _profile) : profile(_profile) {
+    m_client.init_asio();
+    m_client.set_tls_init_handler([](websocketpp::connection_hdl) {
+        return websocketpp::lib::make_shared<boost::asio::ssl::context>(boost::asio::ssl::context::tlsv12);
+    });
+}
+
+Socket::~Socket() {
     disconnect();
 }
 
-void AsyncSocket::connect() {
-    try {
-        boost::asio::ip::tcp::resolver resolver(io_context_);
-        auto endpoints = resolver.resolve(Constants::SOCKET_ADDRESS+"/?signbody="+Helpers::sock_signbody(), std::to_string(Constants::SOCKET_PORT));
-        boost::asio::connect(socket_, endpoints);
+void Socket::connect() {
+    m_client.set_message_handler(std::bind(&Socket::message_handler, this, std::placeholders::_1, std::placeholders::_2));
+    websocketpp::lib::error_code ec;
 
-        thread_ = boost::thread(boost::bind(&AsyncSocket::run_io_context, this));
-        async_read();
-    } catch (std::exception& e) {
-        std::cerr << "Connect error: " << e.what() << std::endl;
+    std::string final = profile->deviceId+"|"+std::to_string(Helpers::timestamp());
+    std::string url = Constants::SOCKET_ADDRESS+"/?signbody="+Helpers::replaceChars(final, '|', "%7C");
+    auto con = m_client.get_connection(url, ec);
+    if (ec) {
+        std::cout << "Error connecting: " << ec.message() << std::endl;
+        return;
+    }
+    ws_headers(con, final);
+
+    m_hdl = con->get_handle();
+    m_client.connect(con);
+
+    m_thread = std::thread([this]() {
+        m_client.run();
+    });
+}
+
+void Socket::disconnect() {
+    websocketpp::lib::error_code ec;
+    m_client.close(m_hdl, websocketpp::close::status::going_away, "", ec);
+    if (ec) {
+        std::cout << "Error disconnecting: " << ec.message() << std::endl;
+    }
+    if (m_thread.joinable()) {
+        m_thread.join();
     }
 }
 
-void AsyncSocket::disconnect() {
-    try {
-        io_context_.stop();
-        if (thread_.joinable()) {
-            thread_.join();
-        }
-        socket_.close();
-    } catch (std::exception& e) {
-        std::cerr << "Disconnect error: " << e.what() << std::endl;
+
+void Socket::send(const std::string& message) {
+    websocketpp::lib::error_code ec;
+    m_client.send(m_hdl, message, websocketpp::frame::opcode::text, ec);
+    if (ec) {
+        std::cout << "Error sending message: " << ec.message() << std::endl;
     }
 }
 
-void AsyncSocket::send(const std::string& message) {
-    try {
-        boost::asio::write(socket_, boost::asio::buffer(message));
-    } catch (std::exception& e) {
-        std::cerr << "Send error: " << e.what() << std::endl;
+void Socket::message_handler(websocketpp::connection_hdl hdl, websocket_client::message_ptr msg) {
+    if (hdl.lock() == m_hdl.lock()) {
+        std::cout << "Received message: " << msg->get_payload() << std::endl;
+        // Handle the received message here
     }
 }
 
-void AsyncSocket::async_read() {
-    boost::asio::async_read(socket_, boost::asio::buffer(buffer_), boost::bind(&AsyncSocket::handle_read, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-}
-
-void AsyncSocket::handle_read(const boost::system::error_code& error, size_t bytes_transferred) {
-    if (!error) {
-        std::string received(buffer_.data(), bytes_transferred);
-        std::cout << "Received: " << received << std::endl;
-        async_read(); // Continue reading
+void Socket::ws_headers(const websocketpp::connection_hdl& connection, const std::string& final) {
+    auto con = m_client.get_con_from_hdl(connection);
+    if (con) {
+        con->append_header("NDCDEVICEID", profile->deviceId);
+        con->append_header("NDCAUTH", "sid="+profile->sid);
+        con->append_header("NDC-MSG-SIG", Helpers::genSignature(final));
     } else {
-        std::cerr << "Read error: " << error.message() << std::endl;
+        std::cout << "Error: Invalid connection handle" << std::endl;
     }
 }
 
-void AsyncSocket::run_io_context() {
-    try {
-        io_context_.run();
-    } catch (std::exception& e) {
-        std::cerr << "IO context error: " << e.what() << std::endl;
-    }
-}
