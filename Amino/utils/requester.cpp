@@ -7,7 +7,6 @@ Requester::Requester(req_data* profile) : ctx_(ssl::context::tlsv12_client), pro
 
 json Requester::sendRequest(RequestTypes method, const std::string& endpoint, const std::string& body, const int successfully, const std::string& content_type) {
     http::response<http::dynamic_body> result;
-    method = Helpers::upper(method);
     switch (method) {
     case RequestTypes::POST:
         result = Requester::post(endpoint, body, content_type);
@@ -22,7 +21,7 @@ json Requester::sendRequest(RequestTypes method, const std::string& endpoint, co
 
         break;
     default:
-        throw InvalidRequestType("Invalid request type [" + method + "]");
+        throw InvalidRequestType("Invalid request type [" + std::to_string(method) + "]");
 
         break;
     }
@@ -147,7 +146,7 @@ json Requester::upload_media(std::ifstream& file, const std::string& fileType){
     }
     std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
-    return sendRequest("POST", "/g/s/media/upload", data, 200, t);
+    return sendRequest(RequestTypes::POST, "/g/s/media/upload", data, 200, t);
 }
 
 
