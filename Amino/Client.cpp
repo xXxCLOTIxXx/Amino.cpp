@@ -36,6 +36,9 @@ json Client::login(std::string email, std::string password, std::string secret) 
     std::string json_str = data.dump();
     json result = requester.sendRequest("POST", "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
 
     return result;
 }
@@ -52,6 +55,9 @@ json Client::login_sid(std::string sid) {
     
     json data;
 
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
     return data;
 }
 
@@ -77,9 +83,11 @@ json Client::login_phone(std::string number, std::string password) {
     json result = requester.sendRequest("POST", "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
 
-    return result;
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
 
-    return data;
+    return result;
 }
 
 
@@ -101,6 +109,9 @@ json Client::logout() {
     std::string json_str = data.dump();
     json result = requester.sendRequest("POST", "/g/s/auth/logout", json_str);
     profile.userId = ""; profile.sid = "";
+    if (socket_enabladed){
+        ws_socket.disconnect();
+    }
 
     return result;
 }
@@ -174,4 +185,12 @@ json Client::get_from_link(std::string link) {
 
     json result = requester.sendRequest("GET", "/g/s/link-resolution?q="+link);
     return result;
+}
+
+
+void Client::wait(){
+    if (!socket_enabladed){return;}
+    while (ws_socket.m_isConnected == true){
+        //nothing :)
+    }
 }

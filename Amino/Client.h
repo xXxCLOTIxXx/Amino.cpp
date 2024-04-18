@@ -25,6 +25,7 @@ public:
 
     json get_user_info(std::string userId);
     json get_from_link(std::string link);
+    void wait();
 
 };
 
