@@ -9,6 +9,7 @@ Client::Client(const std::string& deviceId, bool _run_socket, const std::string&
         profile.deviceId = Helpers::genDeviceId();
     } else {
         profile.deviceId = deviceId;
+        
     }
 }
 
@@ -34,8 +35,11 @@ json Client::login(std::string email, std::string password, std::string secret) 
         {"v", 2},
     };
     std::string json_str = data.dump();
-    json result = requester.sendRequest("POST", "/g/s/auth/login", json_str);
+    json result = requester.sendRequest(Requester::POST, "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
 
     return result;
 }
@@ -52,6 +56,9 @@ json Client::login_sid(std::string sid) {
     
     json data;
 
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
     return data;
 }
 
@@ -74,12 +81,14 @@ json Client::login_phone(std::string number, std::string password) {
         {"action", "normal"}
     };
     std::string json_str = data.dump();
-    json result = requester.sendRequest("POST", "/g/s/auth/login", json_str);
+    json result = requester.sendRequest(Requester::POST, "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
 
-    return result;
+    if (socket_enabladed){
+        ws_socket.connect();
+    }
 
-    return data;
+    return result;
 }
 
 
@@ -99,8 +108,11 @@ json Client::logout() {
         {"deviceID", profile.deviceId},
     };
     std::string json_str = data.dump();
-    json result = requester.sendRequest("POST", "/g/s/auth/logout", json_str);
+    json result = requester.sendRequest(Requester::POST, "/g/s/auth/logout", json_str);
     profile.userId = ""; profile.sid = "";
+    if (socket_enabladed){
+        ws_socket.disconnect();
+    }
 
     return result;
 }
@@ -120,7 +132,7 @@ json Client::delete_account(std::string password) {
         {"deviceID", profile.deviceId},
     };
     std::string json_str = data.dump();
-    json result = requester.sendRequest("POST", "/g/s/account/delete-request", json_str);
+    json result = requester.sendRequest(Requester::POST, "/g/s/account/delete-request", json_str);
 
     return result;
 }
@@ -143,7 +155,7 @@ json Client::restore_account(std::string email, std::string password) {
     };
 
     std::string json_str = data.dump();
-    json result = requester.sendRequest("POST", "/g/s/account/delete-request/cancel", json_str);
+    json result = requester.sendRequest(Requester::POST, "/g/s/account/delete-request/cancel", json_str);
 
     return result;
 }
@@ -158,7 +170,7 @@ json Client::get_user_info(std::string userId) {
      * @return json object.
      */
 
-    json result = requester.sendRequest("GET", "/g/s/user-profile/"+userId);
+    json result = requester.sendRequest(Requester::GET, "/g/s/user-profile/"+userId);
     return result;
 }
 
@@ -172,6 +184,14 @@ json Client::get_from_link(std::string link) {
      * @return json object.
      */
 
-    json result = requester.sendRequest("GET", "/g/s/link-resolution?q="+link);
+    json result = requester.sendRequest(Requester::GET, "/g/s/link-resolution?q="+link);
     return result;
+}
+
+
+void Client::wait(){
+    if (!socket_enabladed){return;}
+    while (ws_socket.m_isConnected == true){
+        //nothing :)
+    }
 }

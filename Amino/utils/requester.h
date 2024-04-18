@@ -33,8 +33,8 @@ class Requester {
 public:
     Requester(req_data* profile);
     //~Requester();
-
-    json sendRequest(std::string method, const std::string& endpoint, const std::string& body = "", const int successfully = 200, const std::string& content_type = "application/json");
+    enum RequestTypes {POST, GET, DELETE};
+    json sendRequest(RequestTypes method, const std::string& endpoint, const std::string& body = "", const int successfully = 200, const std::string& content_type = "application/json");
     http::response<http::dynamic_body> get(const std::string& endpoint, const std::string& content_type = "application/json");
     http::response<http::dynamic_body> post(const std::string& endpoint, std::string body = "", const std::string& content_type = "application/json");
     http::response<http::dynamic_body> delete_request(const std::string& endpoint, const std::string& content_type = "application/json");

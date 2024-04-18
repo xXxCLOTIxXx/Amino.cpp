@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace Constants {
-    const int SOCKET_PORT = 80;
     const std::string SOCKET_ADDRESS = "wss://ws1.aminoapps.com";
     const std::string HTTPS_HOST = "service.aminoapps.com";
     const std::string API_ENDPOINT = "/api/v1/";

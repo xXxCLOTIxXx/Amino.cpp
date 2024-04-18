@@ -6,8 +6,10 @@
 #include "utils/requester.h"
 #include "objects/req_data.h"
 #include "Socket.h"
+#include "EventHandler.h"
 
-class Client {
+
+class Client  : public EventHandler {
 public:
     req_data profile;
     Requester requester;
@@ -25,6 +27,7 @@ public:
 
     json get_user_info(std::string userId);
     json get_from_link(std::string link);
+    void wait();
 
 };
 

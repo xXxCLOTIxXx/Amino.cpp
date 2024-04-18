@@ -1,20 +1,29 @@
 #include "requester.h"
 
+
 Requester::Requester(req_data* profile) : ctx_(ssl::context::tlsv12_client), profile_data(profile) {
     ctx_.set_default_verify_paths();
 }
 
-json Requester::sendRequest(std::string method, const std::string& endpoint, const std::string& body, const int successfully, const std::string& content_type) {
+json Requester::sendRequest(RequestTypes method, const std::string& endpoint, const std::string& body, const int successfully, const std::string& content_type) {
     http::response<http::dynamic_body> result;
-    method = Helpers::upper(method);
-    if (method == "GET"){
-        result = Requester::get(endpoint, content_type);
-    } else if (method == "POST"){
+    switch (method) {
+    case RequestTypes::POST:
         result = Requester::post(endpoint, body, content_type);
-    } else if (method == "DELETE"){
+
+        break;
+    case RequestTypes::GET:
+        result = Requester::get(endpoint, content_type);
+
+        break;
+    case RequestTypes::DELETE:
         result = Requester::delete_request(endpoint, content_type);
-    } else{
-        throw InvalidRequestType("Invalid request type ["+method+"]");
+
+        break;
+    default:
+        throw InvalidRequestType("Invalid request type [" + std::to_string(method) + "]");
+
+        break;
     }
     auto status_code = result.result_int();
     if (status_code != successfully){
@@ -137,7 +146,7 @@ json Requester::upload_media(std::ifstream& file, const std::string& fileType){
     }
     std::string data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     file.close();
-    return sendRequest("POST", "/g/s/media/upload", data, 200, t);
+    return sendRequest(RequestTypes::POST, "/g/s/media/upload", data, 200, t);
 }
 
 
