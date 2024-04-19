@@ -9,6 +9,7 @@
 #include "objects/constants.h"
 #include "objects/req_data.h"
 #include "utils/helpers.h"
+#include "EventHandler.h"
 using websocket_client = websocketpp::client<websocketpp::config::asio_tls_client>;
 
 
@@ -16,7 +17,7 @@ using websocket_client = websocketpp::client<websocketpp::config::asio_tls_clien
 using json = nlohmann::json;
 
 
-class Socket {
+class Socket : public EventHandler{
 public:
     req_data* profile;
     bool m_isConnected; 

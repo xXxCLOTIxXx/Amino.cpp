@@ -1,6 +1,11 @@
 #include "Socket.h"
 
-//In development, still a rough sketch
+/*
+todo:
+socket requests
+clear code
+add normal logging
+*/
 
 Socket::Socket(req_data* _profile) : profile(_profile), m_isConnected(false), m_isConnecting(false) {
     m_client.init_asio();
@@ -60,8 +65,8 @@ void Socket::connect() {
 
 void Socket::connectionSupport() {
     while (m_isConnected) {
-        send(R"({"t": 116, "o": {"threadChannelUserInfoList": []}})");
         std::this_thread::sleep_for(std::chrono::seconds(10));
+        send(R"({"t": 116, "o": {"threadChannelUserInfoList": []}})");
     }
 }
 
@@ -115,11 +120,8 @@ void Socket::message_handler(websocketpp::connection_hdl hdl, websocket_client::
 
         try {
             json jsonData = json::parse(msg->get_payload());
-
-
-            std::cout << "Received JSON data:\n" << jsonData.dump(4) << std::endl;
+            dataHandler(jsonData);
         } catch (const json::parse_error& e) {
-            std::cerr << "JSON parsing error: " << e.what() << std::endl;
     }
 }
 
