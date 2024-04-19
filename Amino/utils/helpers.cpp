@@ -132,12 +132,6 @@ namespace Helpers {
     }
 
 
-
-
-
-
-
-
     std::string base64_url_decode(const std::string & data) {
         std::string out;
         std::vector<int> T(256, -1);
@@ -158,18 +152,27 @@ namespace Helpers {
         return out;
     }
 
+
+    std::string clean_for_json(const std::string &input) {
+        std::string result;
+        for (char c : input) {
+            if (std::isprint(c)) {
+                result += c;
+            }
+        }
+        return result;
+    }
+
+
+
     json decode_sid(const std::string &SID) {
-        std::cout<<"ff";
         int paddingCount = 4 - (SID.length() % 4);
         std::string padding = std::string(paddingCount, '=');
         std::string decoded = base64_url_decode(SID+padding);
         if (decoded.length() > 20) {
             decoded.erase( decoded.length() - 20);
         }
-        std::cout<<decoded<<std::endl<<std::endl;
-
-        //todo 
-        return json::parse(decoded);
+        return json::parse(clean_for_json(decoded));
     }
 
     std::string sid_to_uid(const std::string &SID) {
@@ -187,10 +190,5 @@ namespace Helpers {
     int sid_to_client_type(const std::string &SID) {
         return decode_sid(SID)["6"].get<int>();
     }
-
-
-
-
-
 
 }

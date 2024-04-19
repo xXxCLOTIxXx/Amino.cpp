@@ -18,7 +18,7 @@ public:
     Client(const std::string& deviceId = "", bool _run_socket = true, const std::string& user_agent = "Apple iPhone12,1 iOS v15.5 Main/3.12.2", const std::string& language = "en");
 
     json login(std::string email, std::string password = "", std::string secret = "");
-    json login_sid(std::string sid);
+    std::string login_sid(std::string sid);
     json login_phone(std::string number, std::string password);
     json logout();
     json delete_account(std::string password);

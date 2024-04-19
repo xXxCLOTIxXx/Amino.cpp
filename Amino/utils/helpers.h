@@ -31,6 +31,7 @@ namespace Helpers {
     std::string sid_to_uid(const std::string &SID);
     int sid_created_time(const std::string &SID);
     int sid_to_client_type(const std::string &SID);
+    std::string clean_for_json(const std::string &input);
 
 
     const char base64_url_alphabet[] = {
