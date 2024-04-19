@@ -1,12 +1,5 @@
 #include "Socket.h"
 
-/*
-todo:
-socket requests
-clear code
-add normal logging
-*/
-
 Socket::Socket(req_data* _profile) : profile(_profile), m_isConnected(false), m_isConnecting(false) {
     m_client.init_asio();
     m_client.set_tls_init_handler([](websocketpp::connection_hdl) {

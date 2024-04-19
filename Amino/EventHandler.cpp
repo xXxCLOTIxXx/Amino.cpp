@@ -4,20 +4,15 @@ void EventHandler::addHandler(const std::string& eventName, EventFunction func) 
 }
 
 void EventHandler::call(const std::string& method, const std::string& eventType, const json& data) {
-    // Проверяем наличие метода method в eventMap
     if (eventMap.find(method) != eventMap.end()) {
-        // Получаем список функций для данного метода
         const std::vector<std::function<void(const json&)>>& methodFunctions = eventMap[method];
-        // Вызываем каждую функцию, передавая ей данные data
         for (const auto& func : methodFunctions) {
             func(data);
         }
     }
 
     if (eventMap.find(eventType) != eventMap.end()) {
-        // Получаем список функций для данного eventType
         const std::vector<std::function<void(const json&)>>& eventTypeFunctions = eventMap[eventType];
-        // Вызываем каждую функцию, передавая ей данные data
         for (const auto& func : eventTypeFunctions) {
             func(data);
         }

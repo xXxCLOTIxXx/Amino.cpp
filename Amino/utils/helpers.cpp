@@ -89,7 +89,7 @@ namespace Helpers {
     std::string base64_encode(const std::vector<unsigned char>& input) {
         BIO *bio = BIO_new(BIO_s_mem());
         BIO *b64 = BIO_new(BIO_f_base64());
-        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL); // Remove this line to include newline characters
+        BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
         bio = BIO_push(b64, bio);
 
         BIO_write(bio, input.data(), input.size());

@@ -24,4 +24,4 @@ public:
     void dataHandler(const json& data);
 };
 
-#endif // EVENTHANDLER_H
+#endif
