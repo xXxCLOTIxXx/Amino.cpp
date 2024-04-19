@@ -132,4 +132,63 @@ namespace Helpers {
     }
 
 
+    std::string base64_url_decode(const std::string & data) {
+        std::string out;
+        std::vector<int> T(256, -1);
+        unsigned int i;
+        for (i =0; i < 64; i++) T[base64_url_alphabet[i]] = i;
+
+        int val = 0, valb = -8;
+        for (i = 0; i < data.length(); i++) {
+            unsigned char c = data[i];
+            if (T[c] == -1) break;
+            val = (val<<6) + T[c];
+            valb += 6;
+            if (valb >= 0) {
+            out.push_back(char((val>>valb)&0xFF));
+            valb -= 8;
+            }
+        }
+        return out;
+    }
+
+
+    std::string clean_for_json(const std::string &input) {
+        std::string result;
+        for (char c : input) {
+            if (std::isprint(c)) {
+                result += c;
+            }
+        }
+        return result;
+    }
+
+
+
+    json decode_sid(const std::string &SID) {
+        int paddingCount = 4 - (SID.length() % 4);
+        std::string padding = std::string(paddingCount, '=');
+        std::string decoded = base64_url_decode(SID+padding);
+        if (decoded.length() > 20) {
+            decoded.erase( decoded.length() - 20);
+        }
+        return json::parse(clean_for_json(decoded));
+    }
+
+    std::string sid_to_uid(const std::string &SID) {
+        return decode_sid(SID)["2"].get<std::string>();
+    }
+
+    std::string sid_to_ip_address(const std::string &SID) {
+        return decode_sid(SID)["4"].get<std::string>();
+    }
+
+    int sid_created_time(const std::string &SID) {
+        return decode_sid(SID)["5"].get<int>();
+    }
+
+    int sid_to_client_type(const std::string &SID) {
+        return decode_sid(SID)["6"].get<int>();
+    }
+
 }

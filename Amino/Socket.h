@@ -19,6 +19,16 @@ using json = nlohmann::json;
 
 class Socket : public EventHandler{
 public:
+
+    enum class LogLevel {
+        INFO,
+        WARNING,
+        ERROR,
+        DEBUG,
+        NONE
+    };
+    LogLevel loggerLevel = LogLevel::NONE; 
+
     req_data* profile;
     bool m_isConnected; 
     bool m_isConnecting;
@@ -35,6 +45,7 @@ private:
     void ws_headers(const websocketpp::connection_hdl& connection, const std::string& final);
     void on_disconnect(websocketpp::connection_hdl hdl);
     void connectionSupport();
+    void log(LogLevel level, const std::string& message) const;
     
     websocket_client m_client;
     websocketpp::connection_hdl m_hdl;

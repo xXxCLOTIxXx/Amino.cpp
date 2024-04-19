@@ -45,7 +45,7 @@ json Client::login(std::string email, std::string password, std::string secret) 
 }
 
 
-json Client::login_sid(std::string sid) {
+std::string Client::login_sid(std::string sid) {
     /**
      * @brief Sid login
      * Login to your account using an authorization token. (todo)
@@ -54,12 +54,13 @@ json Client::login_sid(std::string sid) {
      * @return json object.
      */
     
-    json data;
+    std::string uid = Helpers::sid_to_uid(sid);
+    profile.userId = uid; profile.sid = sid;
 
     if (socket_enabladed){
         ws_socket.connect();
     }
-    return data;
+    return uid;
 }
 
 json Client::login_phone(std::string number, std::string password) {
