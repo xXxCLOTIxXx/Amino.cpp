@@ -20,4 +20,5 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-echo "The library has been built. The file is located at build/lib/libAmino.a."
+echo "The library has been built. The file is located at libAmino.a"
+

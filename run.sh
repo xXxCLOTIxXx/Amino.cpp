@@ -1,8 +1,6 @@
 #!/bin/bash
 
-if [ -f "libAmino.a" ]; then
-    echo "File libAmino.a exists in the current directory."
-else
+if [ ! -f "libAmino.a" ]; then
     echo "Error: File libAmino.a not found in the current directory."
     exit 1
 fi

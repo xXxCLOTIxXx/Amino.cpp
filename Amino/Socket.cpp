@@ -27,7 +27,7 @@ void Socket::ws_headers(const websocketpp::connection_hdl& connection, const std
         con->append_header("NDCAUTH", "sid="+profile->sid);
         con->append_header("NDC-MSG-SIG", Helpers::genSignature(final));
     } else {
-        std::cout << "Error: Invalid connection handle" << std::endl;
+        log(LogLevel::ERROR, "Error: Invalid connection handle.");
     }
 }
 
@@ -43,7 +43,7 @@ void Socket::connect() {
     std::string url = Constants::SOCKET_ADDRESS+"/?signbody="+Helpers::replaceChars(final, '|', "%7C");
     auto con = m_client.get_connection(url, ec);
     if (ec) {
-        std::cout << "Error connecting: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error connecting: "+ec.message());
         return;
     }
     ws_headers(con, final);
@@ -76,7 +76,7 @@ void Socket::disconnect() {
     websocketpp::lib::error_code ec;
     m_client.close(m_hdl, websocketpp::close::status::going_away, "", ec);
     if (ec) {
-        std::cout << "Error disconnecting: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error disconnecting: "+ec.message());
     }
     if (m_thread.joinable()) {
         m_thread.join();
@@ -93,14 +93,13 @@ void Socket::on_disconnect(websocketpp::connection_hdl hdl) {
     websocketpp::lib::error_code ec;
     auto con = m_client.get_con_from_hdl(hdl, ec);
     if (ec) {
-        std::cerr << "Error getting connection from handle: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error getting connection from handle: "+ec.message());
         return;
     }
 
     auto close_code = con->get_remote_close_code();
     auto close_reason = con->get_remote_close_reason();
-
-    std::cout << "Disconnected with code: " << close_code << " (" << close_reason << ")" << std::endl;
+    log(LogLevel::INFO, "Disconnected with code: "+ std::to_string(close_code)+" ("+ close_reason+")");
     disconnect();
 
 }
@@ -110,8 +109,9 @@ void Socket::on_disconnect(websocketpp::connection_hdl hdl) {
 void Socket::send(const std::string& message) {
     websocketpp::lib::error_code ec;
     m_client.send(m_hdl, message, websocketpp::frame::opcode::text, ec);
+    log(LogLevel::DEBUG, "The socket sent a message: "+ message);
     if (ec) {
-        std::cout << "Error sending message: " << ec.message() << std::endl;
+        log(LogLevel::WARNING, "Error sending message: "+ ec.message());
     }
 }
 
@@ -125,4 +125,30 @@ void Socket::message_handler(websocketpp::connection_hdl hdl, websocket_client::
     }
 }
 
+}
+
+
+void Socket::log(LogLevel level, const std::string& message) const {
+    if (level >= loggerLevel && level != LogLevel::NONE) {
+        std::string levelStr;
+        switch (level) {
+            case LogLevel::INFO:
+                levelStr = "INFO";
+                break;
+            case LogLevel::WARNING:
+                levelStr = "WARNING";
+                break;
+            case LogLevel::ERROR:
+                levelStr = "ERROR";
+                break;
+            case LogLevel::DEBUG:
+                levelStr = "DEBUG";
+                break;
+            default:
+                levelStr = "UNKNOWN";
+                break;
+        }
+
+        std::cout << "[" << levelStr << "] " << message << std::endl;
+    }
 }

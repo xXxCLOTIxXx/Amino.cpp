@@ -12,6 +12,6 @@ if(NOT HEADERS)
 endif()
 
 add_library(Amino STATIC ${SOURCES} ${HEADERS})
-set_target_properties(Amino PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
+set_target_properties(Amino PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "..")
 
 target_include_directories(Amino PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
