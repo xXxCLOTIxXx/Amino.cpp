@@ -17,7 +17,7 @@ using websocket_client = websocketpp::client<websocketpp::config::asio_tls_clien
 using json = nlohmann::json;
 
 
-class Socket : EventHandler{
+class Socket : public EventHandler{
 public:
     req_data* profile;
     bool m_isConnected; 
