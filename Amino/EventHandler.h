@@ -5,8 +5,10 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <iostream>
+#include "objects/EventTypes.h"
 
-#include "libs/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 using EventFunction = std::function<void(const json&)>;
@@ -18,7 +20,8 @@ private:
 public:
     EventHandler() {}
     void addHandler(const std::string& eventName, EventFunction func);
-    void call(const std::string& eventType, const json& data);
+    void call(const std::string& method, const std::string& eventType, const json& data);
+    void dataHandler(const json& data);
 };
 
-#endif // EVENTHANDLER_H
+#endif

@@ -1,7 +1,5 @@
 #include "Socket.h"
 
-//In development, still a rough sketch
-
 Socket::Socket(req_data* _profile) : profile(_profile), m_isConnected(false), m_isConnecting(false) {
     m_client.init_asio();
     m_client.set_tls_init_handler([](websocketpp::connection_hdl) {
@@ -22,7 +20,7 @@ void Socket::ws_headers(const websocketpp::connection_hdl& connection, const std
         con->append_header("NDCAUTH", "sid="+profile->sid);
         con->append_header("NDC-MSG-SIG", Helpers::genSignature(final));
     } else {
-        std::cout << "Error: Invalid connection handle" << std::endl;
+        log(LogLevel::ERROR, "Error: Invalid connection handle.");
     }
 }
 
@@ -38,7 +36,7 @@ void Socket::connect() {
     std::string url = Constants::SOCKET_ADDRESS+"/?signbody="+Helpers::replaceChars(final, '|', "%7C");
     auto con = m_client.get_connection(url, ec);
     if (ec) {
-        std::cout << "Error connecting: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error connecting: "+ec.message());
         return;
     }
     ws_headers(con, final);
@@ -60,8 +58,8 @@ void Socket::connect() {
 
 void Socket::connectionSupport() {
     while (m_isConnected) {
-        send(R"({"t": 116, "o": {"threadChannelUserInfoList": []}})");
         std::this_thread::sleep_for(std::chrono::seconds(10));
+        send(R"({"t": 116, "o": {"threadChannelUserInfoList": []}})");
     }
 }
 
@@ -71,7 +69,7 @@ void Socket::disconnect() {
     websocketpp::lib::error_code ec;
     m_client.close(m_hdl, websocketpp::close::status::going_away, "", ec);
     if (ec) {
-        std::cout << "Error disconnecting: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error disconnecting: "+ec.message());
     }
     if (m_thread.joinable()) {
         m_thread.join();
@@ -88,14 +86,13 @@ void Socket::on_disconnect(websocketpp::connection_hdl hdl) {
     websocketpp::lib::error_code ec;
     auto con = m_client.get_con_from_hdl(hdl, ec);
     if (ec) {
-        std::cerr << "Error getting connection from handle: " << ec.message() << std::endl;
+        log(LogLevel::ERROR, "Error getting connection from handle: "+ec.message());
         return;
     }
 
     auto close_code = con->get_remote_close_code();
     auto close_reason = con->get_remote_close_reason();
-
-    std::cout << "Disconnected with code: " << close_code << " (" << close_reason << ")" << std::endl;
+    log(LogLevel::INFO, "Disconnected with code: "+ std::to_string(close_code)+" ("+ close_reason+")");
     disconnect();
 
 }
@@ -105,8 +102,9 @@ void Socket::on_disconnect(websocketpp::connection_hdl hdl) {
 void Socket::send(const std::string& message) {
     websocketpp::lib::error_code ec;
     m_client.send(m_hdl, message, websocketpp::frame::opcode::text, ec);
+    log(LogLevel::DEBUG, "The socket sent a message: "+ message);
     if (ec) {
-        std::cout << "Error sending message: " << ec.message() << std::endl;
+        log(LogLevel::WARNING, "Error sending message: "+ ec.message());
     }
 }
 
@@ -115,12 +113,118 @@ void Socket::message_handler(websocketpp::connection_hdl hdl, websocket_client::
 
         try {
             json jsonData = json::parse(msg->get_payload());
-
-
-            std::cout << "Received JSON data:\n" << jsonData.dump(4) << std::endl;
+            dataHandler(jsonData);
         } catch (const json::parse_error& e) {
-            std::cerr << "JSON parsing error: " << e.what() << std::endl;
     }
 }
 
 }
+
+
+void Socket::log(LogLevel level, const std::string& message) const {
+    if (level >= loggerLevel && level != LogLevel::NONE) {
+        std::string levelStr;
+        switch (level) {
+            case LogLevel::INFO:
+                levelStr = "INFO";
+                break;
+            case LogLevel::WARNING:
+                levelStr = "WARNING";
+                break;
+            case LogLevel::ERROR:
+                levelStr = "ERROR";
+                break;
+            case LogLevel::DEBUG:
+                levelStr = "DEBUG";
+                break;
+            default:
+                levelStr = "UNKNOWN";
+                break;
+        }
+
+        std::cout << "[" << levelStr << "] " << message << std::endl;
+    }
+}
+
+
+    void Socket::Browsing(int comId){
+        json data;
+        
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = "ndc://x"+std::to_string(comId)+"/";
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 12800;
+        data["t"] = 304;
+        send(data.dump());
+    }
+
+
+
+    void Socket::BrowsingBlogs(int comId, std::string blogId, int blogType){
+        json data;
+        std::string target = blogId.empty() && blogType == 0 ? "ndc://x" + std::to_string(comId) + "/featured" : "ndc://x" + std::to_string(comId) + "/blog/";
+        
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["blogType"] = blogType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Chatting(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/" + chatId;
+
+        data["o"]["actions"] = json::array({"Chatting"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 12800;
+        data["o"]["params"]["membershipStatus"] = 1;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::PublicChats(int comId){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/public-chats";
+
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 859;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::BrowsingLeaderBoards(int comId){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/leaderboards";
+
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 859;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Typing(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
+
+        data["o"]["actions"] = json::array({"Typing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Recording(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
+
+        data["o"]["actions"] = json::array({"Recording"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }

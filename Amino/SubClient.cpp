@@ -1,5 +1,4 @@
 #include "SubClient.h"
-#include <iostream>
 
 SubClient::SubClient(req_data& _profile_data, const std::string _comId) : profile(&_profile_data), comId(_comId), requester(&_profile_data) {
 }
@@ -21,15 +20,21 @@ json SubClient::delete_community(std::string email, std::string password, std::s
     return result;
 }
 json SubClient::list_communities(int start, int size){
-    json result = requester.sendRequest(Requester::GET, "");
+    json result = requester.sendRequest(Requester::GET, "/g/s/community/managed?start="+std::to_string(start)+"&size="+std::to_string(size));
     return result;
 }
 json SubClient::get_blog_categories(int start, int size){
-    json result = requester.sendRequest(Requester::GET, "");
+    json result = requester.sendRequest(Requester::GET, "/x"+comId+"/s/blog-category?start="+std::to_string(start)+"&size="+std::to_string(size));
     return result;
 }
 json SubClient::change_sidepanel_color(std::string color){
-    json result = requester.sendRequest(Requester::POST, "");
+    json data = {
+        {"path", "appearance.leftSidePanel.style.iconColor"},
+        {"value", color}
+    };
+
+    std::string json_str = data.dump();
+    json result = requester.sendRequest(Requester::POST, "/x"+comId+"/s/community/configuration", json_str);
     return result;
 }
 

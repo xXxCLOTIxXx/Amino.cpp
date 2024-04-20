@@ -6,20 +6,19 @@
 #include "utils/requester.h"
 #include "objects/req_data.h"
 #include "Socket.h"
-#include "EventHandler.h"
 
 
-class Client  : public EventHandler {
+class Client {
 public:
     req_data profile;
     Requester requester;
-    Socket ws_socket;
+    Socket ws;
     bool socket_enabladed;
 
     Client(const std::string& deviceId = "", bool _run_socket = true, const std::string& user_agent = "Apple iPhone12,1 iOS v15.5 Main/3.12.2", const std::string& language = "en");
 
     json login(std::string email, std::string password = "", std::string secret = "");
-    json login_sid(std::string sid);
+    std::string login_sid(std::string sid);
     json login_phone(std::string number, std::string password);
     json logout();
     json delete_account(std::string password);

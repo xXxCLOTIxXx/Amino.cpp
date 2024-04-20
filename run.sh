@@ -1,9 +1,13 @@
 #!/bin/bash
 
+if [ ! -f "libAmino.a" ]; then
+    echo "Error: File libAmino.a not found in the current directory."
+    exit 1
+fi
 
-g++ -std=c++11 -o programm main.cpp Amino/Client.cpp Amino/SubClient.cpp Amino/Socket.cpp Amino/EventHandler.cpp Amino/utils/requester.cpp Amino/utils/helpers.cpp Amino/objects/exceptions.h Amino/objects/constants.h -L/usr/lib -lboost_system -lssl -lcrypto
+g++ -std=c++11 -o programm main.cpp libAmino.a -L/usr/lib -lboost_system -lssl -lcrypto
 
-# Проверяем успешность компиляции
+
 if [ $? -eq 0 ]; then
     echo "Compilation completed successfully. Let's run the program:"
     ./programm

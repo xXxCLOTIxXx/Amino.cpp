@@ -1,8 +1,17 @@
 #include "Client.h"
 
-#include <iostream>
 
-Client::Client(const std::string& deviceId, bool _run_socket, const std::string& user_agent, const std::string& language): requester(&profile), socket_enabladed(_run_socket), ws_socket(&profile) {
+/*
+TODO:
+global socket requests
+clear code
+clean imports
+add objects for functions
+add features
+*/
+
+
+Client::Client(const std::string& deviceId, bool _run_socket, const std::string& user_agent, const std::string& language): requester(&profile), socket_enabladed(_run_socket), ws(&profile) {
     profile.language = language;
     profile.user_agent = user_agent;
     if (deviceId.empty()) {
@@ -14,15 +23,6 @@ Client::Client(const std::string& deviceId, bool _run_socket, const std::string&
 }
 
 json Client::login(std::string email, std::string password, std::string secret) {
-    /**
-     * @brief Email login
-     * Sends an authorization request.
-     * 
-     * @param email - your account email address
-     * @param password - your account password
-     * @param secret - password for your account (optional)
-     * @return json object.
-     */
     
     if (password == "" && secret == ""){
         throw  ArgumentError("Authorization key not specified.");
@@ -38,39 +38,25 @@ json Client::login(std::string email, std::string password, std::string secret) 
     json result = requester.sendRequest(Requester::POST, "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
 
     return result;
 }
 
 
-json Client::login_sid(std::string sid) {
-    /**
-     * @brief Sid login
-     * Login to your account using an authorization token. (todo)
-     * 
-     * @param sid - yourn auth token
-     * @return json object.
-     */
+std::string Client::login_sid(std::string sid) {
     
-    json data;
+    std::string uid = Helpers::sid_to_uid(sid);
+    profile.userId = uid; profile.sid = sid;
 
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
-    return data;
+    return uid;
 }
 
 json Client::login_phone(std::string number, std::string password) {
-    /**
-     * @brief Phone login
-     * Login to your account using your phone number
-     * 
-     * @param number - yourn phone number
-     * @param password - yourn account password
-     * @return json object.
-     */
     
     json data = {
         {"phoneNumber", number},
@@ -85,7 +71,7 @@ json Client::login_phone(std::string number, std::string password) {
     profile.userId = result["auid"]; profile.sid = result["sid"];
 
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
 
     return result;
@@ -96,12 +82,6 @@ json Client::login_phone(std::string number, std::string password) {
 
 
 json Client::logout() {
-    /**
-     * @brief Account logout
-     * Will send a request to log out of your account.
-     *
-     * @return json object.
-     */
 
     json data = {
         {"clientType", 100},
@@ -111,7 +91,7 @@ json Client::logout() {
     json result = requester.sendRequest(Requester::POST, "/g/s/auth/logout", json_str);
     profile.userId = ""; profile.sid = "";
     if (socket_enabladed){
-        ws_socket.disconnect();
+        ws.disconnect();
     }
 
     return result;
@@ -119,13 +99,6 @@ json Client::logout() {
 
 
 json Client::delete_account(std::string password) {
-    /**
-     * @brief Delete account
-     * Send a request to delete your account (you need to log in client.login)
-     * 
-     * @param password - your account password
-     * @return json object.
-     */
 
     json data = {
         {"secret", "0 " + password},
@@ -139,14 +112,6 @@ json Client::delete_account(std::string password) {
 
 
 json Client::restore_account(std::string email, std::string password) {
-    /**
-     * @brief Restore account
-     * Recover a deleted account.
-     * 
-     * @param email - your account email address
-     * @param password - your account password
-     * @return json object.
-     */
 
     json data = {
         {"email", email},
@@ -162,13 +127,6 @@ json Client::restore_account(std::string email, std::string password) {
 
 
 json Client::get_user_info(std::string userId) {
-    /**
-     * @brief Get user info
-     * Get user profile information.
-     * 
-     * @param userId - target user id
-     * @return json object.
-     */
 
     json result = requester.sendRequest(Requester::GET, "/g/s/user-profile/"+userId);
     return result;
@@ -176,13 +134,6 @@ json Client::get_user_info(std::string userId) {
 
 
 json Client::get_from_link(std::string link) {
-    /**
-     * @brief Get link info
-     * Sends a request for information about the link.
-     * 
-     * @param link - your link
-     * @return json object.
-     */
 
     json result = requester.sendRequest(Requester::GET, "/g/s/link-resolution?q="+link);
     return result;
@@ -191,7 +142,7 @@ json Client::get_from_link(std::string link) {
 
 void Client::wait(){
     if (!socket_enabladed){return;}
-    while (ws_socket.m_isConnected == true){
+    while (ws.m_isConnected == true){
         //nothing :)
     }
 }
