@@ -2,7 +2,7 @@
 
 class AccessTypes {
 public:
-    static constexpr int PUBLIC = 0;
-    static constexpr int PRIVATE = 1;
-    static constexpr int RESTRICTED = 2;
+    static constexpr int PRIVATE = 0;
+    static constexpr int PRIVATE2 = 1;
+    static constexpr int PUBLIC = 2;
 };
