@@ -35,11 +35,13 @@ int main() {
 
 ```
 <br>
-<h2 align="center">Compiling your programs:</h2>
+<h2 align="center">Install lib & Compiling your programs:</h2>
 
-```
+```bash
+git clone https://github.com/xXxCLOTIxXx/Amino.cpp.git
+cd Amino.cpp
 sh collect.sh
 sh run.sh
 ```
-
+<p align="center">when you run run.sh, there should be a file with your main.cpp code in the same directory</p>
 </body>
