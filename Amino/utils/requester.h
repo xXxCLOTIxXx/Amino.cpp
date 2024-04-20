@@ -1,13 +1,11 @@
 #ifndef REQUESTER_H
 #define REQUESTER_H
 
-#include <string>
+
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-#include "../libs/json.hpp"
 #include <fstream>
-using json = nlohmann::json;
 
 
 #include <boost/asio/ip/tcp.hpp>
@@ -19,9 +17,8 @@ using json = nlohmann::json;
 #include "../objects/req_data.h"
 #include "../objects/exceptions.h"
 
-#include "../libs/json.hpp"
+
 #include "../objects/constants.h"
-using json = nlohmann::json;
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -32,7 +29,6 @@ using tcp = boost::asio::ip::tcp;
 class Requester {
 public:
     Requester(req_data* profile);
-    //~Requester();
     enum RequestTypes {POST, GET, DELETE};
     json sendRequest(RequestTypes method, const std::string& endpoint, const std::string& body = "", const int successfully = 200, const std::string& content_type = "application/json");
     http::response<http::dynamic_body> get(const std::string& endpoint, const std::string& content_type = "application/json");

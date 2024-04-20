@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 project(Amino)
-
 file(GLOB_RECURSE SOURCES "Amino/*.cpp")
 file(GLOB_RECURSE HEADERS "Amino/*.h" "Amino/*.hpp")
 

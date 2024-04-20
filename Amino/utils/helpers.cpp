@@ -9,8 +9,6 @@
 #include <openssl/rand.h>
 #include <boost/beast/http.hpp>
 
-#include <typeinfo>
-
 namespace http = boost::beast::http;
 
 namespace Helpers {

@@ -8,7 +8,7 @@
 #include <iostream>
 #include "objects/EventTypes.h"
 
-#include "libs/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 using EventFunction = std::function<void(const json&)>;

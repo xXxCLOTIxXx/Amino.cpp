@@ -1,16 +1,11 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
-
-
 #include <boost/beast/http.hpp>
 namespace http = boost::beast::http;
-
 #include <string>
-
 #include "../objects/constants.h"
-
-#include "../libs/json.hpp"
+#include "json.hpp"
 using json = nlohmann::json;
 
 namespace Helpers {
@@ -43,4 +38,4 @@ namespace Helpers {
 };
 
 }
-#endif // HELPERS_H
+#endif

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <string>
 #include <thread>
 #include <functional>
 #include <websocketpp/config/asio_client.hpp>
@@ -12,10 +10,6 @@
 #include "EventHandler.h"
 #include "objects/Types.h"
 using websocket_client = websocketpp::client<websocketpp::config::asio_tls_client>;
-
-
-#include "libs/json.hpp"
-using json = nlohmann::json;
 
 
 class Socket : public EventHandler{
