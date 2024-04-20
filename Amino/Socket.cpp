@@ -145,3 +145,86 @@ void Socket::log(LogLevel level, const std::string& message) const {
         std::cout << "[" << levelStr << "] " << message << std::endl;
     }
 }
+
+
+    void Socket::Browsing(int comId){
+        json data;
+        
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = "ndc://x"+std::to_string(comId)+"/";
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 12800;
+        data["t"] = 304;
+        send(data.dump());
+    }
+
+
+
+    void Socket::BrowsingBlogs(int comId, std::string blogId, int blogType){
+        json data;
+        std::string target = blogId.empty() && blogType == 0 ? "ndc://x" + std::to_string(comId) + "/featured" : "ndc://x" + std::to_string(comId) + "/blog/";
+        
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["blogType"] = blogType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Chatting(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/" + chatId;
+
+        data["o"]["actions"] = json::array({"Chatting"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 12800;
+        data["o"]["params"]["membershipStatus"] = 1;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::PublicChats(int comId){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/public-chats";
+
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 859;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::BrowsingLeaderBoards(int comId){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/leaderboards";
+
+        data["o"]["actions"] = json::array({"Browsing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["duration"] = 859;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Typing(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
+
+        data["o"]["actions"] = json::array({"Typing"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }
+    void Socket::Recording(int comId, const std::string& chatId, int threadType){
+        json data;
+        std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
+
+        data["o"]["actions"] = json::array({"Recording"});
+        data["o"]["target"] = target;
+        data["o"]["ndcId"] = comId;
+        data["o"]["params"]["threadType"] = threadType;
+        data["t"] = 304;
+        send(data.dump());
+    }

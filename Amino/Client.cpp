@@ -2,7 +2,7 @@
 
 /*
 TODO:
-socket requests
+global socket requests
 clear code
 clean imports
 add objects for functions
@@ -10,7 +10,7 @@ add features
 */
 
 
-Client::Client(const std::string& deviceId, bool _run_socket, const std::string& user_agent, const std::string& language): requester(&profile), socket_enabladed(_run_socket), ws_socket(&profile) {
+Client::Client(const std::string& deviceId, bool _run_socket, const std::string& user_agent, const std::string& language): requester(&profile), socket_enabladed(_run_socket), ws(&profile) {
     profile.language = language;
     profile.user_agent = user_agent;
     if (deviceId.empty()) {
@@ -37,7 +37,7 @@ json Client::login(std::string email, std::string password, std::string secret) 
     json result = requester.sendRequest(Requester::POST, "/g/s/auth/login", json_str);
     profile.userId = result["auid"]; profile.sid = result["sid"];
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
 
     return result;
@@ -50,7 +50,7 @@ std::string Client::login_sid(std::string sid) {
     profile.userId = uid; profile.sid = sid;
 
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
     return uid;
 }
@@ -70,7 +70,7 @@ json Client::login_phone(std::string number, std::string password) {
     profile.userId = result["auid"]; profile.sid = result["sid"];
 
     if (socket_enabladed){
-        ws_socket.connect();
+        ws.connect();
     }
 
     return result;
@@ -90,7 +90,7 @@ json Client::logout() {
     json result = requester.sendRequest(Requester::POST, "/g/s/auth/logout", json_str);
     profile.userId = ""; profile.sid = "";
     if (socket_enabladed){
-        ws_socket.disconnect();
+        ws.disconnect();
     }
 
     return result;
@@ -141,7 +141,7 @@ json Client::get_from_link(std::string link) {
 
 void Client::wait(){
     if (!socket_enabladed){return;}
-    while (ws_socket.m_isConnected == true){
+    while (ws.m_isConnected == true){
         //nothing :)
     }
 }

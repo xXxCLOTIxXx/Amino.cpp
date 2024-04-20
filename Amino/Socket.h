@@ -10,6 +10,7 @@
 #include "objects/req_data.h"
 #include "utils/helpers.h"
 #include "EventHandler.h"
+#include "objects/Types.h"
 using websocket_client = websocketpp::client<websocketpp::config::asio_tls_client>;
 
 
@@ -19,7 +20,6 @@ using json = nlohmann::json;
 
 class Socket : public EventHandler{
 public:
-
     enum class LogLevel {
         INFO,
         WARNING,
@@ -27,6 +27,7 @@ public:
         DEBUG,
         NONE
     };
+
     LogLevel loggerLevel = LogLevel::NONE; 
 
     req_data* profile;
@@ -39,6 +40,16 @@ public:
     void connect();
     void disconnect();
     void send(const std::string& message);
+
+    //actions
+    void BrowsingBlogs(int comId, std::string blogId = "", int blogType = AccessTypes::PRIVATE);
+    void Chatting(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
+    void PublicChats(int comId);
+    void BrowsingLeaderBoards(int comId);
+    void Typing(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
+    void Recording(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
+    void Browsing(int comId);
+
 
 private:
     void message_handler(websocketpp::connection_hdl hdl, websocket_client::message_ptr msg);

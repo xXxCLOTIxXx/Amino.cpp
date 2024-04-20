@@ -12,7 +12,7 @@ class Client {
 public:
     req_data profile;
     Requester requester;
-    Socket ws_socket;
+    Socket ws;
     bool socket_enabladed;
 
     Client(const std::string& deviceId = "", bool _run_socket = true, const std::string& user_agent = "Apple iPhone12,1 iOS v15.5 Main/3.12.2", const std::string& language = "en");
