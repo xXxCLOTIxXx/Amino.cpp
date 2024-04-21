@@ -7,8 +7,6 @@
 
 ```cpp
 #include "Amino/Client.h"
-#include "Amino/libs/json.hpp"
-using json = nlohmann::json;
 
 int main() {
     Client client;
