@@ -63,7 +63,6 @@ public:
     json send_coins(int coins, std::string blogId = "", std::string chatId = "", std::string objectId = "", std::string transactionId = "");
     json follow(std::string userId);
     json unfollow(std::string userId);
-
     json block(std::string userId);
     json unblock(std::string userId);
     json join_community(int comId, std::string invitationId = "");
@@ -102,12 +101,6 @@ public:
     json purchase(std::string objectId, bool isAutoRenew = false);
     json get_public_communities(std::string language = "en", int size = 25);
     json get_blockers();
-
-
-
-
-
-    void wait();
 
 };
 

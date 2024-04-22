@@ -1,6 +1,6 @@
 #include "SubClient.h"
 
-SubClient::SubClient(req_data& _profile_data, const std::string _comId) : profile(&_profile_data), comId(_comId), requester(&_profile_data) {
+SubClient::SubClient(req_data& _profile_data, const int _comId) : profile(&_profile_data), comId(std::to_string(_comId)), requester(&_profile_data) {
 }
 
 json SubClient::delete_community(std::string email, std::string password, std::string verificationCode){

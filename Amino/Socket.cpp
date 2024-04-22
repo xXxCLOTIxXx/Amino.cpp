@@ -171,7 +171,7 @@ void Socket::log(LogLevel level, const std::string& message) const {
         data["t"] = 304;
         send(data.dump());
     }
-    void Socket::Chatting(int comId, const std::string& chatId, int threadType){
+    void Socket::Chatting(int comId, std::string chatId, int threadType){
         json data;
         std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/" + chatId;
 
@@ -206,7 +206,7 @@ void Socket::log(LogLevel level, const std::string& message) const {
         data["t"] = 304;
         send(data.dump());
     }
-    void Socket::Typing(int comId, const std::string& chatId, int threadType){
+    void Socket::Typing(std::string chatId, int comId, int threadType){
         json data;
         std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
 
@@ -217,7 +217,7 @@ void Socket::log(LogLevel level, const std::string& message) const {
         data["t"] = 304;
         send(data.dump());
     }
-    void Socket::Recording(int comId, const std::string& chatId, int threadType){
+    void Socket::Recording(std::string chatId, int comId, int threadType){
         json data;
         std::string target = "ndc://x" + std::to_string(comId) + "/chat-thread/"+chatId;
 
@@ -226,5 +226,27 @@ void Socket::log(LogLevel level, const std::string& message) const {
         data["o"]["ndcId"] = comId;
         data["o"]["params"]["threadType"] = threadType;
         data["t"] = 304;
+        send(data.dump());
+    }
+
+
+
+    void Socket::join_voice_chat(std::string chatId, int comId, int joinType){
+        json data;
+
+        if (comId !=0){data["o"]["ndcId"] = comId;}
+        data["o"]["joinRole"] = joinType;
+        data["o"]["threadId"] = chatId;
+        data["t"] = 112;
+        send(data.dump());
+    }
+    void Socket::join_video_chat(std::string chatId, int comId, int joinType){
+        json data;
+
+        if (comId !=0){data["o"]["ndcId"] = comId;}
+        data["o"]["joinRole"] = joinType;
+        data["o"]["threadId"] = chatId;
+        data["o"]["channelType"] = 5;
+        data["t"] = 108;
         send(data.dump());
     }

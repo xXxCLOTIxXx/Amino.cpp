@@ -140,9 +140,7 @@ json Client::get_from_link(std::string link) {
 }
 
 
-void Client::wait(){
-    if (!socket_enabladed){return;}
-    while (ws.m_isConnected == true){
-        //nothing :)
-    }
+json Client::get_my_communities(int start, int size){
+    json result = requester.sendRequest(Requester::GET, "/g/s/community/joined?v=1&start="+std::to_string(start)+"&size="+std::to_string(size));
+    return result;
 }

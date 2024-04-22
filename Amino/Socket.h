@@ -37,12 +37,14 @@ public:
 
     //actions
     void BrowsingBlogs(int comId, std::string blogId = "", int blogType = AccessTypes::PRIVATE);
-    void Chatting(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
+    void Chatting(int comId, std::string chatId, int threadType = AccessTypes::PUBLIC);
     void PublicChats(int comId);
     void BrowsingLeaderBoards(int comId);
-    void Typing(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
-    void Recording(int comId, const std::string& chatId, int threadType = AccessTypes::PUBLIC);
     void Browsing(int comId);
+    void Typing(std::string chatId, int comId, int threadType = AccessTypes::PUBLIC);
+    void Recording(std::string chatId, int comId, int threadType = AccessTypes::PUBLIC);
+    void join_voice_chat(std::string chatId, int comId = 0, int joinType = WsJoinTypes::AS_PARTICIPANT);
+    void join_video_chat(std::string chatId, int comId = 0, int joinType = WsJoinTypes::AS_PARTICIPANT);
 
 
 private:
