@@ -1,6 +1,11 @@
 <body>
 
 <h1 align="center">Amino.cpp</h1>
+	<div align="center">
+		<a href="https://github.com/xXxCLOTIxXx/xXxCLOTIxXx/blob/main/sponsor.md">
+			<img src="https://img.shields.io/static/v1?style=for-the-badge&label=Sponsor project&message=%E2%9D%A4&color=ff69b4" alt="Sponsor project"/>
+		</a>
+	</div>
 <h2 align="center">Examples (more examples in the corresponding directory):</h2>
 
 <h3 align="center">Login</h3>
