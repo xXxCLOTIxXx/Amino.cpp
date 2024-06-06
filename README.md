@@ -1,6 +1,6 @@
 <body>
 	<p align="center">
-	    <a href="https://github.com/xXxCLOTIxXx/Amino.cpp/tree/main/docs/images/logo.png"><img src=""/></a>
+	    <a href="#"><img src="https://github.com/xXxCLOTIxXx/Amino.cpp/tree/main/docs/images/logo.png" alt="Amino.cpp"/></a><br>
 	    <a href="https://github.com/xXxCLOTIxXx/Amino.cpp/releases"><img src="https://img.shields.io/github/v/release/xXxCLOTIxXx/Amino.cpp" alt="GitHub release" />
 	    <a href="https://github.com/xXxCLOTIxXx/Amino.cpp/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="licence" /></a>
 	    <a href="https://github.com/xXxCLOTIxXx/Amino.cpp/blob/main/docs/main.md"><img src="https://img.shields.io/website?down_message=failing&label=docs&up_color=green&up_message=passing&url=https://github.com/xXxCLOTIxXx/Amino.cpp/blob/main/docs/main.md" alt="docs" /></a>
