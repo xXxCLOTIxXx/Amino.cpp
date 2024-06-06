@@ -1,6 +1,6 @@
 <body>
 	<div align="center">
-	    <a href="https://github.com/xXxCLOTIxXx/Amino.cpp"><img src=""/></a>
+	    <a href="#"><img src="images/logo.png" alt="Amino.cpp"/></a><br>
     <hr>
 
 
