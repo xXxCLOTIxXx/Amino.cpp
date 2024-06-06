@@ -16,7 +16,9 @@
 git clone https://github.com/xXxCLOTIxXx/Amino.cpp.git
 ```
 <hr><br>
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&duration=2000&pause=2000&color=457b9d&repeat=false&random=false&width=90&lines=Using" alt="Using"/>
+<a href="https://github.com/xXxCLOTIxXx/Amino.cpp/tree/main/examples">
+	<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&duration=2000&pause=2000&color=457b9d&repeat=false&random=false&width=90&lines=Using" alt="Using"/>
+</a>
 </div>
 <h4 align="center">Login example</h4>
 
