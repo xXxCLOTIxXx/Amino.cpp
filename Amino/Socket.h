@@ -4,11 +4,11 @@
 #include <functional>
 #include <websocketpp/config/asio_client.hpp>
 #include <websocketpp/client.hpp>
-#include "objects/constants.h"
+#include "objects/args/constants.h"
 #include "objects/req_data.h"
 #include "utils/helpers.h"
 #include "EventHandler.h"
-#include "objects/Types.h"
+#include "objects/args/WsTypes.h"
 using websocket_client = websocketpp::client<websocketpp::config::asio_tls_client>;
 
 

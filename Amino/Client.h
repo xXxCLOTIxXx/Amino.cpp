@@ -8,6 +8,8 @@
 #include "Socket.h"
 //#include "objects/ResponseObjects/UserProfile.h"
 
+#include "objects/args/all.h"
+
 
 class Client {
 public:
@@ -24,9 +26,9 @@ public:
     json logout();
     json delete_account(std::string password);
     json restore_account(std::string email, std::string password);
+    //json register_account(std::string nickname, std::string email, std::string password, std::string verificationCode);
 
-    json register_account(std::string nickname, std::string email, std::string password, std::string verificationCode);
-    json configure(int age, std::string gender);
+    json configure(int age, int gender = Gender::non_binary);
     json verify(std::string email, std::string code);
     json request_verify_code(std::string email, bool resetPassword = false);
     json activate_account(std::string email, std::string code);
@@ -101,6 +103,7 @@ public:
     json purchase(std::string objectId, bool isAutoRenew = false);
     json get_public_communities(std::string language = "en", int size = 25);
     json get_blockers();
+    json set_privacy_status(bool isAnonymous = false, bool getNotifications = false);
 
 };
 

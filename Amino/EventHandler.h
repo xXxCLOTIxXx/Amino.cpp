@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "objects/EventTypes.h"
+#include "objects/args/EventTypes.h"
 
 #include "json.hpp"
 using json = nlohmann::json;
